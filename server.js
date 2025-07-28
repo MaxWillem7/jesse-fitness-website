@@ -25,16 +25,21 @@ if (!process.env.GEMINI_API_KEY) {
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 console.log('✅ Gemini AI geïnitialiseerd met API key');
 
+// Gemini API status
+let geminiAvailable = false;
+
 // Test API key
 async function testGeminiAPI() {
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         const result = await model.generateContent("Test");
         console.log('✅ Gemini API werkt correct!');
+        geminiAvailable = true;
         return true;
     } catch (error) {
         console.error('❌ Gemini API test failed:', error.message);
-        console.log('⚠️  Gebruik fallback responses');
+        console.log('⚠️  Gebruik fallback responses - Gemini API niet beschikbaar');
+        geminiAvailable = false;
         return false;
     }
 }
@@ -78,7 +83,13 @@ app.post('/api/chat', async (req, res) => {
             return res.status(400).json({ error: 'Bericht is vereist' });
         }
 
-        // Try Gemini API first, fallback to local responses
+        // Check if Gemini is available, otherwise use fallback directly
+        if (!geminiAvailable) {
+            console.log('⚠️  Gemini API niet beschikbaar, gebruik fallback');
+            throw new Error('Use fallback');
+        }
+
+        // Try Gemini API
         try {
             const model = genAI.getGenerativeModel({ model: "gemini-pro" });
             
@@ -148,6 +159,26 @@ app.post('/api/chat', async (req, res) => {
 
 // Motivatie endpoint
 app.get('/api/motivation', async (req, res) => {
+    // Check if Gemini is available
+    if (!geminiAvailable) {
+        console.log('⚠️  Gemini API niet beschikbaar voor motivatie, gebruik fallback');
+        const fallbackMotivations = [
+            "JESSE, JIJ BENT STERKER DAN JE DENKT! 💪 ELKE DAG IS EEN NIEUWE KANS OM TE GROEIEN! 🚀",
+            "ELKE REP BRENGT JE DICHTER BIJ JE DOEL! 🔥 BLIJF DOORGAAN! 💪",
+            "GEEN EXCUSES, ALLEEN RESULTATEN! 💪 JIJ KAN DIT! 🏋️‍♂️",
+            "VANDAAG IS DE DAG OM TE KNALLEN! 🚀 FOCUS OP JE DOEL! 💪",
+            "ZET DOOR, OOK ALS HET ZWAAR WORDT! 💪 JIJ BENT EEN KRIJGER! ⚡",
+            "PUSH JE LIMIETEN! 🔥 JIJ BENT EEN BEAST! 💪",
+            "ELKE REP TELT! ⚡ BLIJF DOORGAAN! 🏆",
+            "GEEN TERUGVAL! 💪 JIJ KAN DIT! 🚀",
+            "FOCUS OP JE DOEL! 🎯 JIJ WORDT STERKER! 💪",
+            "JIJ BENT ONSTOPPABLE! 🔥 BLIJF DOORGAAN! ⚡"
+        ];
+        
+        const randomMotivation = fallbackMotivations[Math.floor(Math.random() * fallbackMotivations.length)];
+        return res.json({ motivation: randomMotivation });
+    }
+
     try {
         const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         
@@ -185,6 +216,40 @@ app.get('/api/motivation', async (req, res) => {
 
 // Workout suggestie endpoint
 app.post('/api/workout-suggestion', async (req, res) => {
+    // Check if Gemini is available
+    if (!geminiAvailable) {
+        console.log('⚠️  Gemini API niet beschikbaar voor workout, gebruik fallback');
+        const fallbackWorkouts = {
+            'chest': [
+                '🏋️ Bankdrukken - 4 sets x 8-12 reps',
+                '💪 Dumbbell Flyes - 3 sets x 12-15 reps',
+                '🔥 Push-ups - 3 sets x max reps',
+                '💪 Incline Bench Press - 4 sets x 8-12 reps',
+                '🔥 Cable Flyes - 3 sets x 12-15 reps',
+                '💪 Decline Push-ups - 3 sets x max reps'
+            ],
+            'back': [
+                '💪 Pull-ups - 4 sets x max reps',
+                '🏋️ Barbell Rows - 4 sets x 8-12 reps',
+                '🔥 Lat Pulldown - 3 sets x 10-15 reps',
+                '💪 Bicep Curls - 3 sets x 12-15 reps',
+                '🔥 Hammer Curls - 3 sets x 12-15 reps',
+                '💪 Preacher Curls - 3 sets x 10-12 reps'
+            ],
+            'legs': [
+                '🏋️ Squats - 4 sets x 8-12 reps',
+                '🔥 Lunges - 3 sets x 12 reps per been',
+                '💪 Leg Press - 3 sets x 10-15 reps',
+                '🔥 Shoulder Press - 4 sets x 8-12 reps',
+                '💪 Side Raises - 3 sets x 12-15 reps',
+                '🔥 Rear Delt Flyes - 3 sets x 12-15 reps'
+            ]
+        };
+        
+        const workout = fallbackWorkouts[muscleGroup] || fallbackWorkouts['chest'];
+        return res.json({ workout: workout.join('\n') });
+    }
+
     try {
         const { muscleGroup, difficulty } = req.body;
         
