@@ -123,17 +123,17 @@ app.post('/api/chat', async (req, res) => {
         
         // Fallback responses voor als Gemini niet werkt
         const fallbackResponses = {
-            'borst': "💪 Jesse, voor borstspieren: Bankdrukken, Dumbbell Press, Push-ups, Cable Flyes zijn geweldig! Focus op 8-12 reps voor spiergroei.",
-            'rug': "🏋️ Jesse, voor rugspieren: Pull-ups, Deadlifts, Barbell Rows, Lat Pulldown. Zorg voor goede vorm!",
-            'benen': "🔥 Jesse, voor beenspieren: Squats, Deadlifts, Lunges, Leg Press. Benen zijn je fundament!",
-            'schouders': "💪 Jesse, voor schouders: Military Press, Lateral Raises, Arnold Press. Werk alle drie de koppen!",
-            'biceps': "💪 Jesse, Biceps: Curls, Hammer Curls. Triceps: Dips, Pushdowns. Armen reageren goed op volume!",
-            'motivatie': "🚀 Jesse, jij bent sterker dan je denkt! Elke rep telt. Focus op progressie, niet perfectie!",
-            'sets': "📊 Jesse, voor spiergroei: 3-4 sets, 8-12 reps. Voor kracht: 4-5 sets, 4-6 reps. Voor uithouding: 2-3 sets, 15+ reps!"
+            'borst': "💪 JESSE, VOOR BORSTSPIEREN: BANKD RUKKEN, DUMBBELL PRESS, PUSH-UPS, CABLE FLYES ZIJN GEWELDIG! FOCUS OP 8-12 REPS VOOR SPIERGROEI! 🏋️‍♂️",
+            'rug': "🏋️ JESSE, VOOR RUGSPIEREN: PULL-UPS, DEADLIFTS, BARBELL ROWS, LAT PULLDOWN. ZORG VOOR GOEDE VORM! 💪",
+            'benen': "🔥 JESSE, VOOR BEENSPIEREN: SQUATS, DEADLIFTS, LUNGES, LEG PRESS. BENEN ZIJN JE FUNDAMENT! ⚡",
+            'schouders': "💪 JESSE, VOOR SCHOUDERS: MILITARY PRESS, LATERAL RAISES, ARNOLD PRESS. WERK ALLE DRIE DE KOPPEN! 🚀",
+            'biceps': "💪 JESSE, BICEPS: CURLS, HAMMER CURLS. TRICEPS: DIPS, PUSHDOWNS. ARMEN REAGEREN GOED OP VOLUME! 🔥",
+            'motivatie': "🚀 JESSE, JIJ BENT STERKER DAN JE DENKT! ELKE REP TELT. FOCUS OP PROGRESSIE, NIET PERFECTIE! 💪",
+            'sets': "📊 JESSE, VOOR SPIERGROEI: 3-4 SETS, 8-12 REPS. VOOR KRACHT: 4-5 SETS, 4-6 REPS. VOOR UITHOUDING: 2-3 SETS, 15+ REPS! 🏋️‍♂️"
         };
         
         const messageLower = message.toLowerCase();
-        let fallbackResponse = "💪 Jesse, stel me specifieke vragen over spiergroepen, oefeningen, sets/reps, of motivatie! Ik help je graag verder!";
+        let fallbackResponse = "💪 Jesse, je moet niet zoveel vragen stellen! HOU GEWOON JE BEK EN GA DOOR MET TRAINEN!";
         
         for (const [keyword, response] of Object.entries(fallbackResponses)) {
             if (messageLower.includes(keyword)) {
@@ -166,11 +166,16 @@ app.get('/api/motivation', async (req, res) => {
         console.error('Error generating motivation:', error);
         
         const fallbackMotivations = [
-            "Jesse, jij bent sterker dan je denkt! 💪 Elke dag is een nieuwe kans om te groeien! 🚀",
-            "Elke rep brengt je dichter bij je doel! 🔥 Blijf doorgaan!",
-            "Geen excuses, alleen resultaten! 💪 Jij kan dit!",
-            "Vandaag is de dag om te knallen! 🚀 Focus op je doel!",
-            "Zet door, ook als het zwaar wordt! 💪 Jij bent een krijger!"
+            "JESSE, JIJ BENT STERKER DAN JE DENKT! 💪 ELKE DAG IS EEN NIEUWE KANS OM TE GROEIEN! 🚀",
+            "ELKE REP BRENGT JE DICHTER BIJ JE DOEL! 🔥 BLIJF DOORGAAN! 💪",
+            "GEEN EXCUSES, ALLEEN RESULTATEN! 💪 JIJ KAN DIT! 🏋️‍♂️",
+            "VANDAAG IS DE DAG OM TE KNALLEN! 🚀 FOCUS OP JE DOEL! 💪",
+            "ZET DOOR, OOK ALS HET ZWAAR WORDT! 💪 JIJ BENT EEN KRIJGER! ⚡",
+            "PUSH JE LIMIETEN! 🔥 JIJ BENT EEN BEAST! 💪",
+            "ELKE REP TELT! ⚡ BLIJF DOORGAAN! 🏆",
+            "GEEN TERUGVAL! 💪 JIJ KAN DIT! 🚀",
+            "FOCUS OP JE DOEL! 🎯 JIJ WORDT STERKER! 💪",
+            "JIJ BENT ONSTOPPABLE! 🔥 BLIJF DOORGAAN! ⚡"
         ];
         
         const randomMotivation = fallbackMotivations[Math.floor(Math.random() * fallbackMotivations.length)];
