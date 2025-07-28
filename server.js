@@ -25,6 +25,23 @@ if (!process.env.GEMINI_API_KEY) {
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 console.log('✅ Gemini AI geïnitialiseerd met API key');
 
+// Test API key
+async function testGeminiAPI() {
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const result = await model.generateContent("Test");
+        console.log('✅ Gemini API werkt correct!');
+        return true;
+    } catch (error) {
+        console.error('❌ Gemini API test failed:', error.message);
+        console.log('⚠️  Gebruik fallback responses');
+        return false;
+    }
+}
+
+// Test API bij startup
+testGeminiAPI();
+
 // Fitness coach prompt voor Gemini
 const FITNESS_COACH_PROMPT = `Je bent Max, Jesse's persoonlijke trainer. Je bent een motiverende, enthousiaste fitness expert die Jesse helpt met zijn fitness doelen.
 
@@ -61,39 +78,44 @@ app.post('/api/chat', async (req, res) => {
             return res.status(400).json({ error: 'Bericht is vereist' });
         }
 
-        // Initialize Gemini model
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-        
-        // Create chat session
-        const chat = model.startChat({
-            generationConfig: {
-                maxOutputTokens: 500,
-                temperature: 0.7,
-            },
-            history: [
-                {
-                    role: "user",
-                    parts: [{ text: FITNESS_COACH_PROMPT }]
+        // Try Gemini API first, fallback to local responses
+        try {
+            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+            
+            // Create chat session
+            const chat = model.startChat({
+                generationConfig: {
+                    maxOutputTokens: 500,
+                    temperature: 0.7,
                 },
-                {
-                    role: "model",
-                    parts: [{ text: "Hé Jesse! 💪 Ik ben Max, je trainer! Ik ga je helpen om je doelen te bereiken! Stel me vragen over oefeningen, training, voeding of motivatie - ik ben er voor je! 🔥" }]
-                }
-            ]
-        });
+                history: [
+                    {
+                        role: "user",
+                        parts: [{ text: FITNESS_COACH_PROMPT }]
+                    },
+                    {
+                        role: "model",
+                        parts: [{ text: "Hé Jesse! 💪 Ik ben Max, je trainer! Ik ga je helpen om je doelen te bereiken! Stel me vragen over oefeningen, training, voeding of motivatie - ik ben er voor je! 🔥" }]
+                    }
+                ]
+            });
 
-        // Send message to Gemini with timeout
-        const result = await Promise.race([
-            chat.sendMessage(message),
-            new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Gemini API timeout')), 8000)
-            )
-        ]);
-        
-        const response = await result.response;
-        const text = response.text();
+            // Send message to Gemini with timeout
+            const result = await Promise.race([
+                chat.sendMessage(message),
+                new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Gemini API timeout')), 8000)
+                )
+            ]);
+            
+            const response = await result.response;
+            const text = response.text();
 
-        res.json({ response: text });
+            res.json({ response: text });
+        } catch (geminiError) {
+            console.log('⚠️  Gemini API failed, using fallback');
+            throw new Error('Use fallback');
+        }
         
     } catch (error) {
         console.error('❌ Error with Gemini API:', error.message);
@@ -140,6 +162,7 @@ app.get('/api/motivation', async (req, res) => {
         res.json({ motivation: text });
         
     } catch (error) {
+        console.log('⚠️  Gemini API failed for motivation, using fallback');
         console.error('Error generating motivation:', error);
         
         const fallbackMotivations = [
@@ -174,6 +197,7 @@ app.post('/api/workout-suggestion', async (req, res) => {
         res.json({ workout: text });
         
     } catch (error) {
+        console.log('⚠️  Gemini API failed for workout, using fallback');
         console.error('Error generating workout:', error);
         
         // Fallback workouts per spiergroep
