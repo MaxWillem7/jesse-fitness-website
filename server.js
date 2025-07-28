@@ -11,6 +11,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
 
+// Serve index.html for root path
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
 // Initialize Gemini AI
 if (!process.env.GEMINI_API_KEY) {
     console.error('❌ GEMINI_API_KEY is niet geconfigureerd!');
@@ -56,7 +61,7 @@ app.post('/api/chat', async (req, res) => {
         }
 
         // Initialize Gemini model
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         
         // Create chat session
         const chat = model.startChat({
@@ -95,7 +100,7 @@ app.post('/api/chat', async (req, res) => {
 // Motivatie endpoint
 app.get('/api/motivation', async (req, res) => {
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         
         const prompt = `Geef Jesse een korte, motiverende fitness quote (max 100 woorden) in het Nederlands. 
         Gebruik veel emoji's en spreek Jesse direct aan. 
@@ -120,7 +125,7 @@ app.post('/api/workout-suggestion', async (req, res) => {
     try {
         const { muscleGroup, difficulty } = req.body;
         
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
         
         const prompt = `Jesse vraagt om een ${difficulty || 'gemiddeld'} niveau workout voor ${muscleGroup}. 
         Geef 6 oefeningen met sets en reps in het Nederlands. 
