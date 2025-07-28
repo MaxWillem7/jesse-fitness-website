@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jesse's Gym Journey - Kom op Jesse!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', 'Helvetica Bold', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('header-bg.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .header h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            animation: pulse 2s infinite;
+        }
+
+        .header p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .motivation-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .motivation-text {
+            font-size: 3rem;
+            max-width: 800px;
+            margin: 2rem 0;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .motivation-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .motivation-text.highlight {
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .ai-motivation-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .ai-motivation-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .ai-motivation-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .workout-section {
+            padding: 4rem 2rem;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .workout-section h2 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            color: #ffd700;
+        }
+
+        .workout-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .workout-day {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .workout-day:hover {
+            transform: translateY(-10px);
+        }
+
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-btn {
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn:hover {
+            background: #ffed4e;
+            transform: scale(1.05);
+        }
+
+        .alternative-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .alternative-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .workout-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .workout-content.expanded {
+            max-height: 500px;
+        }
+
+        .workout-day h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+            text-align: center;
+        }
+
+        .workout-day ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .workout-day li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 1.1rem;
+        }
+
+        .workout-day li:last-child {
+            border-bottom: none;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .footer h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #ffd700;
+        }
+
+        /* Chatbox styling */
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .chat-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            color: #333;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chat-input button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .chat-input button:hover {
+            background: #5a6fd8;
+        }
+
+        .chat-container.minimized {
+            height: 60px;
+        }
+
+        .chat-container.minimized .chat-messages,
+        .chat-container.minimized .chat-input {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            .motivation-text {
+                font-size: 2rem;
+            }
+            .workout-day h3 {
+                font-size: 1.5rem;
+            }
+            .chat-container {
+                width: 90%;
+                right: 5%;
+                left: 5%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>KOM OP JESSE! 💪</h1>
+        <p>Jij kan dit! Elke dag is een nieuwe kans om sterker te worden!</p>
+    </div>
+
+    <div class="motivation-section">
+        <div class="motivation-text" data-text="Elke rep brengt je dichter bij je doel!">
+            Elke rep brengt je dichter bij je doel!
+        </div>
+        <div class="motivation-text" data-text="Geen excuses, alleen resultaten!">
+            Geen excuses, alleen resultaten!
+        </div>
+        <div class="motivation-text" data-text="Jij bent sterker dan je denkt!">
+            Jij bent sterker dan je denkt!
+        </div>
+        <div class="motivation-text" data-text="Vandaag is de dag om te knallen!">
+            Vandaag is de dag om te knallen!
+        </div>
+        <div class="motivation-text" data-text="Zet door, ook als het zwaar wordt!">
+            Zet door, ook als het zwaar wordt!
+        </div>
+        <div class="motivation-text" data-text="Elke dag telt!">
+            Elke dag telt!
+        </div>
+        <div class="motivation-text" data-text="Jij bent een krijger!">
+            Jij bent een krijger!
+        </div>
+        <div class="motivation-text" data-text="Focus op je doel!">
+            Focus op je doel!
+        </div>
+        <button id="aiMotivationBtn" class="ai-motivation-btn" onclick="getAIMotivation()">
+            🚀 Krijg AI Motivatie!
+        </button>
+    </div>
+
+    <div class="workout-section">
+        <h2>🏋️‍♂️ JESSE'S TRAININGSSCHEMA 🏋️‍♂️</h2>
+        <div class="workout-grid">
+            <div class="workout-day">
+                <div class="workout-header">
+                    <h3>DAG 1: BORST & TRICEPS</h3>
+                    <button class="toggle-btn" onclick="toggleWorkout(this)">📋 Toon Schema</button>
+                </div>
+                <div class="workout-content">
+                    <ul>
+                        <li>🏋️ Bankdrukken - 4 sets x 8-12 reps</li>
+                        <li>💪 Dumbbell Flyes - 3 sets x 12-15 reps</li>
+                        <li>🔥 Push-ups - 3 sets x max reps</li>
+                        <li>💪 Tricep Dips - 3 sets x 10-15 reps</li>
+                        <li>🔥 Tricep Pushdowns - 3 sets x 12-15 reps</li>
+                        <li>💪 Close-Grip Bench Press - 3 sets x 8-12 reps</li>
+                    </ul>
+                    <button class="alternative-btn" onclick="generateAlternatives(this, 'chest')">🔄 Bedenk Alternatief</button>
+                </div>
+            </div>
+            <div class="workout-day">
+                <div class="workout-header">
+                    <h3>DAG 2: RUG & BICEPS</h3>
+                    <button class="toggle-btn" onclick="toggleWorkout(this)">📋 Toon Schema</button>
+                </div>
+                <div class="workout-content">
+                    <ul>
+                        <li>💪 Pull-ups - 4 sets x max reps</li>
+                        <li>🏋️ Barbell Rows - 4 sets x 8-12 reps</li>
+                        <li>🔥 Lat Pulldown - 3 sets x 10-15 reps</li>
+                        <li>💪 Bicep Curls - 3 sets x 12-15 reps</li>
+                        <li>🔥 Hammer Curls - 3 sets x 12-15 reps</li>
+                        <li>💪 Preacher Curls - 3 sets x 10-12 reps</li>
+                    </ul>
+                    <button class="alternative-btn" onclick="generateAlternatives(this, 'back')">🔄 Bedenk Alternatief</button>
+                </div>
+            </div>
+            <div class="workout-day">
+                <div class="workout-header">
+                    <h3>DAG 3: BENEN & SCHOUDERS</h3>
+                    <button class="toggle-btn" onclick="toggleWorkout(this)">📋 Toon Schema</button>
+                </div>
+                <div class="workout-content">
+                    <ul>
+                        <li>🏋️ Squats - 4 sets x 8-12 reps</li>
+                        <li>🔥 Lunges - 3 sets x 12 reps per been</li>
+                        <li>💪 Leg Press - 3 sets x 10-15 reps</li>
+                        <li>🔥 Shoulder Press - 4 sets x 8-12 reps</li>
+                        <li>💪 Side Raises - 3 sets x 12-15 reps</li>
+                        <li>🔥 Rear Delt Flyes - 3 sets x 12-15 reps</li>
+                    </ul>
+                    <button class="alternative-btn" onclick="generateAlternatives(this, 'legs')">🔄 Bedenk Alternatief</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <h3>🚀 JESSE, JIJ GAAT DIT KILLEN! 🚀</h3>
+        <p>Gym Zeewolde wacht op je! Elke dag is een nieuwe kans om te groeien!</p>
+    </div>
+
+    <!-- Chatbox -->
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <h3>💬 Jesse's Fitness Coach</h3>
+            <button class="chat-toggle" onclick="toggleChat()">−</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                Hey Jesse! 💪 Ik ben je persoonlijke fitness coach. Stel me vragen over oefeningen, spiergroepen of training! 
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Stel je vraag..." onkeypress="handleChatKeyPress(event)">
+            <button onclick="sendMessage()">📤</button>
+        </div>
+    </div>
+
+    <script>
+        // Scroll-geactiveerde motiverende teksten
+        const motivationTexts = document.querySelectorAll('.motivation-text');
+        
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Voeg highlight toe aan willekeurige woorden
+                    setTimeout(() => {
+                        entry.target.classList.add('highlight');
+                    }, 500);
+                } else {
+                    entry.target.classList.remove('visible', 'highlight');
+                }
+            });
+        }, observerOptions);
+
+        motivationTexts.forEach(text => {
+            observer.observe(text);
+        });
+
+        // Extra motivatie bij scrollen
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop) {
+                // Scroll naar beneden - voeg extra motivatie toe
+                const randomTexts = [
+                    "💪 Blijf doorgaan!",
+                    "🔥 Jij bent onstoppable!",
+                    "⚡ Elke stap telt!",
+                    "🏆 Jij wordt sterker!",
+                    "🚀 Focus op je doel!"
+                ];
+                
+                if (Math.random() < 0.1) { // 10% kans
+                    const randomText = randomTexts[Math.floor(Math.random() * randomTexts.length)];
+                    showFloatingMotivation(randomText);
+                }
+            }
+            lastScrollTop = scrollTop;
+        });
+
+        function showFloatingMotivation(text) {
+            const floating = document.createElement('div');
+            floating.textContent = text;
+            floating.style.cssText = `
+                position: fixed;
+                top: ${Math.random() * 50 + 20}%;
+                left: ${Math.random() * 60 + 20}%;
+                background: rgba(255, 215, 0, 0.9);
+                color: #000;
+                padding: 10px 20px;
+                border-radius: 25px;
+                font-weight: bold;
+                font-size: 1.2rem;
+                z-index: 1000;
+                animation: floatUp 2s ease-out forwards;
+                pointer-events: none;
+            `;
+            
+            document.body.appendChild(floating);
+            
+            setTimeout(() => {
+                document.body.removeChild(floating);
+            }, 2000);
+        }
+
+        // Voeg CSS animatie toe voor floating tekst
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes floatUp {
+                0% { opacity: 0; transform: translateY(20px); }
+                20% { opacity: 1; transform: translateY(0); }
+                80% { opacity: 1; transform: translateY(-20px); }
+                100% { opacity: 0; transform: translateY(-40px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Uitklapbare trainingsschema's
+        function toggleWorkout(button) {
+            const workoutContent = button.closest('.workout-day').querySelector('.workout-content');
+            const isExpanded = workoutContent.classList.contains('expanded');
+            
+            if (isExpanded) {
+                workoutContent.classList.remove('expanded');
+                button.textContent = '📋 Toon Schema';
+            } else {
+                workoutContent.classList.add('expanded');
+                button.textContent = '📋 Verberg Schema';
+            }
+        }
+
+        // Alternatieve oefeningen genereren
+        const alternativeExercises = {
+            chest: [
+                '🏋️ Incline Bench Press - 4 sets x 8-12 reps',
+                '💪 Cable Flyes - 3 sets x 12-15 reps',
+                '🔥 Decline Push-ups - 3 sets x max reps',
+                '💪 Dumbbell Press - 4 sets x 8-12 reps',
+                '🔥 Machine Chest Press - 3 sets x 10-15 reps',
+                '💪 Resistance Band Push-ups - 3 sets x max reps'
+            ],
+            back: [
+                '💪 Assisted Pull-ups - 4 sets x max reps',
+                '🏋️ T-Bar Rows - 4 sets x 8-12 reps',
+                '🔥 Seated Cable Rows - 3 sets x 10-15 reps',
+                '💪 Concentration Curls - 3 sets x 12-15 reps',
+                '🔥 Cable Curls - 3 sets x 12-15 reps',
+                '💪 Incline Dumbbell Curls - 3 sets x 10-12 reps'
+            ],
+            legs: [
+                '🏋️ Front Squats - 4 sets x 8-12 reps',
+                '🔥 Bulgarian Split Squats - 3 sets x 12 reps per been',
+                '💪 Hack Squat Machine - 3 sets x 10-15 reps',
+                '🔥 Military Press - 4 sets x 8-12 reps',
+                '💪 Arnold Press - 3 sets x 12-15 reps',
+                '🔥 Upright Rows - 3 sets x 12-15 reps'
+            ]
+        };
+        // Uitgebreide alternatieve oefeningen
+        const extendedAlternativeExercises = {
+            chest: [
+                '🏋️ Incline Bench Press - 4 sets x 8-12 reps',
+                '💪 Cable Flyes - 3 sets x 12-15 reps',
+                '🔥 Decline Push-ups - 3 sets x max reps',
+                '💪 Dumbbell Press - 4 sets x 8-12 reps',
+                '🔥 Machine Chest Press - 3 sets x 10-15 reps',
+                '💪 Resistance Band Push-ups - 3 sets x max reps',
+                '🏋️ Smith Machine Press - 4 sets x 8-12 reps',
+                '💪 Pec Deck Flyes - 3 sets x 12-15 reps',
+                '🔥 Diamond Push-ups - 3 sets x max reps',
+                '💪 Landmine Press - 4 sets x 8-12 reps',
+                '🔥 Medicine Ball Slams - 3 sets x 15 reps',
+                '💪 Plate Press - 3 sets x 12-15 reps',
+                '🏋️ Guillotine Press - 4 sets x 8-12 reps',
+                '💪 Swiss Ball Press - 3 sets x 12-15 reps',
+                '🔥 Plyometric Push-ups - 3 sets x max reps',
+                '💪 Single-Arm Dumbbell Press - 3 sets x 10-12 reps'
+            ],
+            back: [
+                '💪 Assisted Pull-ups - 4 sets x max reps',
+                '🏋️ T-Bar Rows - 4 sets x 8-12 reps',
+                '🔥 Seated Cable Rows - 3 sets x 10-15 reps',
+                '💪 Concentration Curls - 3 sets x 12-15 reps',
+                '🔥 Cable Curls - 3 sets x 12-15 reps',
+                '💪 Incline Dumbbell Curls - 3 sets x 10-12 reps',
+                '🏋️ Deadlifts - 4 sets x 6-8 reps',
+                '💪 Face Pulls - 3 sets x 12-15 reps',
+                '🔥 Lat Pulldown Wide Grip - 3 sets x 10-15 reps',
+                '💪 Spider Curls - 3 sets x 12-15 reps',
+                '🔥 Reverse Flyes - 3 sets x 12-15 reps',
+                '💪 Zottman Curls - 3 sets x 10-12 reps',
+                '🏋️ Rack Pulls - 4 sets x 6-8 reps',
+                '💪 Band Pull-Aparts - 3 sets x 15-20 reps',
+                '💪 Single-Arm Rows - 3 sets x 10-12 reps',
+                '💪 21s Bicep Curls - 3 sets x 21 reps'
+            ],
+            legs: [
+                '🏋️ Front Squats - 4 sets x 8-12 reps',
+                '🔥 Bulgarian Split Squats - 3 sets x 12 reps per been',
+                '💪 Hack Squat Machine - 3 sets x 10-15 reps',
+                '🔥 Military Press - 4 sets x 8-12 reps',
+                '💪 Arnold Press - 3 sets x 12-15 reps',
+                '🔥 Upright Rows - 3 sets x 12-15 reps',
+                '🏋️ Romanian Deadlifts - 4 sets x 8-12 reps',
+                '💪 Leg Extensions - 3 sets x 12-15 reps',
+                '🔥 Leg Curls - 3 sets x 12-15 reps',
+                '💪 Lateral Raises - 3 sets x 12-15 reps',
+                '🔥 Box Jumps - 3 sets x 10 reps',
+                '💪 Calf Raises - 4 sets x 15-20 reps',
+                '🏋️ Trap Bar Deadlifts - 4 sets x 6-8 reps',
+                '💪 Step-Ups - 3 sets x 12 reps per been',
+                '🔥 Pike Push-ups - 3 sets x max reps',
+                '💪 Shrugs - 3 sets x 12-15 reps',
+                '🏋️ Goblet Squats - 4 sets x 10-12 reps',
+                '💪 Lateral Lunges - 3 sets x 10 reps per been',
+                '🔥 Pike Press - 3 sets x 8-12 reps',
+                '💪 Rear Delt Flyes - 3 sets x 12-15 reps'
+            ]
+        };
+
+        async function generateAlternatives(button, muscleGroup) {
+            const workoutContent = button.closest('.workout-content');
+            const ul = workoutContent.querySelector('ul');
+            
+            // Toon loading
+            button.textContent = '🤔 AI denkt na...';
+            button.disabled = true;
+            
+            try {
+                const response = await fetch('/api/workout-suggestion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        muscleGroup: muscleGroup,
+                        difficulty: 'gemiddeld'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                // Parse de workout response
+                const exercises = data.workout.split('\n').filter(line => line.trim());
+                
+                // Vervang de oefeningen
+                ul.innerHTML = '';
+                exercises.forEach(exercise => {
+                    const li = document.createElement('li');
+                    li.textContent = exercise.trim();
+                    ul.appendChild(li);
+                });
+                
+                // Toon een motiverende melding
+                showFloatingMotivation('🔄 Nieuwe AI workout voor Jesse!');
+                
+            } catch (error) {
+                // Fallback naar lokale oefeningen
+                const exercises = extendedAlternativeExercises[muscleGroup];
+                const shuffled = [...exercises].sort(() => Math.random() - 0.5);
+                
+                ul.innerHTML = '';
+                shuffled.slice(0, 6).forEach(exercise => {
+                    const li = document.createElement('li');
+                    li.textContent = exercise;
+                    ul.appendChild(li);
+                });
+                
+                showFloatingMotivation('🔄 Nieuwe uitdaging voor Jesse!');
+            } finally {
+                button.textContent = '🔄 Bedenk Alternatief';
+                button.disabled = false;
+            }
+        }
+
+        // Chatbox functionaliteit
+        function toggleChat() {
+            const container = document.getElementById('chatContainer');
+            const toggle = document.querySelector('.chat-toggle');
+            container.classList.toggle('minimized');
+            
+            if (container.classList.contains('minimized')) {
+                toggle.textContent = '+';
+            } else {
+                toggle.textContent = '−';
+            }
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addMessage(message, 'user');
+                input.value = '';
+                
+                // Toon loading indicator
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'message bot-message';
+                loadingDiv.innerHTML = '💭 <em>Coach Jesse denkt na...</em>';
+                document.getElementById('chatMessages').appendChild(loadingDiv);
+                
+                try {
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message })
+                    });
+                    
+                    // Verwijder loading indicator
+                    document.getElementById('chatMessages').removeChild(loadingDiv);
+                    
+                    const data = await response.json();
+                    addMessage(data.response, 'bot');
+                } catch (error) {
+                    // Verwijder loading indicator
+                    document.getElementById('chatMessages').removeChild(loadingDiv);
+                    addMessage('Sorry Jesse, er ging iets mis met mijn AI brein! 💭 Probeer het over een paar minuten opnieuw! 💪', 'bot');
+                }
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            // Support voor HTML content (voor emoji's en formatting)
+            if (sender === 'bot') {
+                messageDiv.innerHTML = text;
+            } else {
+                messageDiv.textContent = text;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        async function getAIMotivation() {
+            const btn = document.getElementById('aiMotivationBtn');
+            const originalText = btn.textContent;
+            
+            btn.textContent = '🤔 AI denkt na...';
+            btn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/motivation');
+                const data = await response.json();
+                
+                // Voeg nieuwe motivatie toe aan de sectie
+                const motivationSection = document.querySelector('.motivation-section');
+                const newMotivation = document.createElement('div');
+                newMotivation.className = 'motivation-text';
+                newMotivation.textContent = data.motivation;
+                newMotivation.style.opacity = '0';
+                newMotivation.style.transform = 'translateY(50px)';
+                
+                motivationSection.insertBefore(newMotivation, btn.parentNode);
+                
+                // Animeer de nieuwe motivatie
+                setTimeout(() => {
+                    newMotivation.style.transition = 'all 0.8s ease';
+                    newMotivation.style.opacity = '1';
+                    newMotivation.style.transform = 'translateY(0)';
+                }, 100);
+                
+                // Toon floating motivatie
+                showFloatingMotivation('🚀 Nieuwe AI motivatie voor Jesse!');
+                
+            } catch (error) {
+                showFloatingMotivation('💪 Blijf doorgaan Jesse!');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function generateFitnessResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            // Simpele response logica (in een echte app zou je Gemini API gebruiken)
+            if (message.includes('borst') || message.includes('chest')) {
+                return "💪 Voor borstspieren: Bankdrukken, Dumbbell Press, Push-ups, Cable Flyes zijn geweldig! Focus op 8-12 reps voor spiergroei.";
+            } else if (message.includes('rug') || message.includes('back')) {
+                return "🏋️ Voor rugspieren: Pull-ups, Deadlifts, Barbell Rows, Lat Pulldown. Zorg voor goede vorm!";
+            } else if (message.includes('benen') || message.includes('legs')) {
+                return "🔥 Voor beenspieren: Squats, Deadlifts, Lunges, Leg Press. Benen zijn je fundament!";
+            } else if (message.includes('schouders') || message.includes('shoulder')) {
+                return "💪 Voor schouders: Military Press, Lateral Raises, Arnold Press. Werk alle drie de koppen!";
+            } else if (message.includes('biceps') || message.includes('triceps')) {
+                return "💪 Biceps: Curls, Hammer Curls. Triceps: Dips, Pushdowns. Armen reageren goed op volume!";
+            } else if (message.includes('motivatie') || message.includes('motivation')) {
+                return "🚀 Jesse, jij bent sterker dan je denkt! Elke rep telt. Focus op progressie, niet perfectie!";
+            } else if (message.includes('sets') || message.includes('reps')) {
+                return "📊 Voor spiergroei: 3-4 sets, 8-12 reps. Voor kracht: 4-5 sets, 4-6 reps. Voor uithouding: 2-3 sets, 15+ reps!";
+            } else {
+                return "💪 Stel me specifieke vragen over spiergroepen, oefeningen, sets/reps, of motivatie! Ik help je graag verder!";
+            }
+        }
+    </script>
+</body>
+</html> 
