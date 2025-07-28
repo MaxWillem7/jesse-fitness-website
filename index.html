@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Arial Black', 'Helvetica Bold', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1A1E23 0%, #2E343B 100%);
             color: white;
             overflow-x: hidden;
         }
@@ -25,7 +25,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('./header-bg.jpg');
+            background: linear-gradient(rgba(26,30,35,0.8), rgba(46,52,59,0.8)), url('./header-bg.jpg');
             background-size: cover;
             background-position: center;
         }
@@ -73,12 +73,12 @@
         }
 
         .motivation-text.highlight {
-            color: #ffd700;
+            color: #E85F0C;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         .ai-motivation-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #E85F0C 0%, #003DFF 100%);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -88,7 +88,7 @@
             cursor: pointer;
             margin-top: 2rem;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 5px 15px rgba(232,95,12,0.3);
         }
 
         .ai-motivation-btn:hover {
@@ -111,7 +111,7 @@
             text-align: center;
             font-size: 3rem;
             margin-bottom: 3rem;
-            color: #ffd700;
+            color: #E85F0C;
         }
 
         .workout-grid {
@@ -123,11 +123,11 @@
         }
 
         .workout-day {
-            background: rgba(255,255,255,0.1);
+            background: rgba(46,52,59,0.8);
             border-radius: 15px;
             padding: 2rem;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(232,95,12,0.3);
             transition: transform 0.3s ease;
         }
 
@@ -143,8 +143,8 @@
         }
 
         .toggle-btn {
-            background: #ffd700;
-            color: #000;
+            background: #E85F0C;
+            color: white;
             border: none;
             padding: 8px 16px;
             border-radius: 20px;
@@ -154,12 +154,12 @@
         }
 
         .toggle-btn:hover {
-            background: #ffed4e;
+            background: #003DFF;
             transform: scale(1.05);
         }
 
         .alternative-btn {
-            background: #ff6b6b;
+            background: #003DFF;
             color: white;
             border: none;
             padding: 8px 16px;
@@ -171,7 +171,7 @@
         }
 
         .alternative-btn:hover {
-            background: #ff5252;
+            background: #E85F0C;
             transform: scale(1.05);
         }
 
@@ -188,7 +188,7 @@
         .workout-day h3 {
             font-size: 2rem;
             margin-bottom: 1rem;
-            color: #ffd700;
+            color: #E85F0C;
             text-align: center;
         }
 
@@ -216,7 +216,7 @@
         .footer h3 {
             font-size: 2rem;
             margin-bottom: 1rem;
-            color: #ffd700;
+            color: #E85F0C;
         }
 
         /* Chatbox styling */
@@ -237,7 +237,7 @@
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #E85F0C 0%, #003DFF 100%);
             color: white;
             padding: 15px;
             border-radius: 15px 15px 0 0;
@@ -275,7 +275,7 @@
         }
 
         .user-message {
-            background: #667eea;
+            background: #003DFF;
             color: white;
             margin-left: auto;
         }
@@ -301,7 +301,7 @@
         }
 
         .chat-input button {
-            background: #667eea;
+            background: #E85F0C;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -311,7 +311,7 @@
         }
 
         .chat-input button:hover {
-            background: #5a6fd8;
+            background: #003DFF;
         }
 
         .chat-container.minimized {
@@ -512,8 +512,8 @@
                 position: fixed;
                 top: ${Math.random() * 50 + 20}%;
                 left: ${Math.random() * 60 + 20}%;
-                background: rgba(255, 215, 0, 0.9);
-                color: #000;
+                background: rgba(232, 95, 12, 0.9);
+                color: white;
                 padding: 10px 20px;
                 border-radius: 25px;
                 font-weight: bold;
