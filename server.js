@@ -82,8 +82,14 @@ app.post('/api/chat', async (req, res) => {
             ]
         });
 
-        // Send message to Gemini
-        const result = await chat.sendMessage(message);
+        // Send message to Gemini with timeout
+        const result = await Promise.race([
+            chat.sendMessage(message),
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Gemini API timeout')), 8000)
+            )
+        ]);
+        
         const response = await result.response;
         const text = response.text();
 

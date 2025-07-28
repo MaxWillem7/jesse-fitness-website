@@ -732,21 +732,59 @@
                 document.getElementById('chatMessages').appendChild(loadingDiv);
                 
                 try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconden timeout
+                    
                     const response = await fetch('/api/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message })
+                        body: JSON.stringify({ message }),
+                        signal: controller.signal
                     });
+                    
+                    clearTimeout(timeoutId);
                     
                     // Verwijder loading indicator
                     document.getElementById('chatMessages').removeChild(loadingDiv);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                     
                     const data = await response.json();
                     addMessage(data.response, 'bot');
                 } catch (error) {
+                    console.error('Chat error:', error);
+                    
                     // Verwijder loading indicator
-                    document.getElementById('chatMessages').removeChild(loadingDiv);
-                    addMessage('Sorry Jesse, er ging iets mis met mijn AI brein! 💭 Probeer het over een paar minuten opnieuw! 💪', 'bot');
+                    try {
+                        document.getElementById('chatMessages').removeChild(loadingDiv);
+                    } catch (e) {
+                        // Loading div al weggehaald
+                    }
+                    
+                    // Fallback response
+                    const fallbackResponses = {
+                        'borst': "💪 Jesse, voor borstspieren: Bankdrukken, Dumbbell Press, Push-ups, Cable Flyes zijn geweldig! Focus op 8-12 reps voor spiergroei.",
+                        'rug': "🏋️ Jesse, voor rugspieren: Pull-ups, Deadlifts, Barbell Rows, Lat Pulldown. Zorg voor goede vorm!",
+                        'benen': "🔥 Jesse, voor beenspieren: Squats, Deadlifts, Lunges, Leg Press. Benen zijn je fundament!",
+                        'schouders': "💪 Jesse, voor schouders: Military Press, Lateral Raises, Arnold Press. Werk alle drie de koppen!",
+                        'biceps': "💪 Jesse, Biceps: Curls, Hammer Curls. Triceps: Dips, Pushdowns. Armen reageren goed op volume!",
+                        'motivatie': "🚀 Jesse, jij bent sterker dan je denkt! Elke rep telt. Focus op progressie, niet perfectie!",
+                        'sets': "📊 Jesse, voor spiergroei: 3-4 sets, 8-12 reps. Voor kracht: 4-5 sets, 4-6 reps. Voor uithouding: 2-3 sets, 15+ reps!"
+                    };
+                    
+                    const messageLower = message.toLowerCase();
+                    let fallbackResponse = "💪 Jesse, stel me specifieke vragen over spiergroepen, oefeningen, sets/reps, of motivatie! Ik help je graag verder!";
+                    
+                    for (const [keyword, response] of Object.entries(fallbackResponses)) {
+                        if (messageLower.includes(keyword)) {
+                            fallbackResponse = response;
+                            break;
+                        }
+                    }
+                    
+                    addMessage(fallbackResponse, 'bot');
                 }
             }
         }
