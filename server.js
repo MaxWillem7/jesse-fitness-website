@@ -91,9 +91,29 @@ app.post('/api/chat', async (req, res) => {
     } catch (error) {
         console.error('❌ Error with Gemini API:', error.message);
         console.error('Full error:', error);
-        res.status(500).json({ 
-            response: "Sorry Jesse, er ging iets mis met mijn AI brein! 💭 Probeer het over een paar minuten opnieuw, of stel me een andere vraag! 💪" 
-        });
+        
+        // Fallback responses voor als Gemini niet werkt
+        const fallbackResponses = {
+            'borst': "💪 Voor borstspieren: Bankdrukken, Dumbbell Press, Push-ups, Cable Flyes zijn geweldig! Focus op 8-12 reps voor spiergroei.",
+            'rug': "🏋️ Voor rugspieren: Pull-ups, Deadlifts, Barbell Rows, Lat Pulldown. Zorg voor goede vorm!",
+            'benen': "🔥 Voor beenspieren: Squats, Deadlifts, Lunges, Leg Press. Benen zijn je fundament!",
+            'schouders': "💪 Voor schouders: Military Press, Lateral Raises, Arnold Press. Werk alle drie de koppen!",
+            'biceps': "💪 Biceps: Curls, Hammer Curls. Triceps: Dips, Pushdowns. Armen reageren goed op volume!",
+            'motivatie': "🚀 Jesse, jij bent sterker dan je denkt! Elke rep telt. Focus op progressie, niet perfectie!",
+            'sets': "📊 Voor spiergroei: 3-4 sets, 8-12 reps. Voor kracht: 4-5 sets, 4-6 reps. Voor uithouding: 2-3 sets, 15+ reps!"
+        };
+        
+        const messageLower = message.toLowerCase();
+        let fallbackResponse = "💪 Stel me specifieke vragen over spiergroepen, oefeningen, sets/reps, of motivatie! Ik help je graag verder!";
+        
+        for (const [keyword, response] of Object.entries(fallbackResponses)) {
+            if (messageLower.includes(keyword)) {
+                fallbackResponse = response;
+                break;
+            }
+        }
+        
+        res.json({ response: fallbackResponse });
     }
 });
 
@@ -114,9 +134,17 @@ app.get('/api/motivation', async (req, res) => {
         
     } catch (error) {
         console.error('Error generating motivation:', error);
-        res.json({ 
-            motivation: "Jesse, jij bent sterker dan je denkt! 💪 Elke dag is een nieuwe kans om te groeien! 🚀" 
-        });
+        
+        const fallbackMotivations = [
+            "Jesse, jij bent sterker dan je denkt! 💪 Elke dag is een nieuwe kans om te groeien! 🚀",
+            "Elke rep brengt je dichter bij je doel! 🔥 Blijf doorgaan!",
+            "Geen excuses, alleen resultaten! 💪 Jij kan dit!",
+            "Vandaag is de dag om te knallen! 🚀 Focus op je doel!",
+            "Zet door, ook als het zwaar wordt! 💪 Jij bent een krijger!"
+        ];
+        
+        const randomMotivation = fallbackMotivations[Math.floor(Math.random() * fallbackMotivations.length)];
+        res.json({ motivation: randomMotivation });
     }
 });
 
@@ -140,9 +168,37 @@ app.post('/api/workout-suggestion', async (req, res) => {
         
     } catch (error) {
         console.error('Error generating workout:', error);
-        res.status(500).json({ 
-            workout: "Sorry Jesse, ik kon geen workout genereren. Probeer het later opnieuw! 💪" 
-        });
+        
+        // Fallback workouts per spiergroep
+        const fallbackWorkouts = {
+            'chest': [
+                '🏋️ Bankdrukken - 4 sets x 8-12 reps',
+                '💪 Dumbbell Flyes - 3 sets x 12-15 reps',
+                '🔥 Push-ups - 3 sets x max reps',
+                '💪 Incline Bench Press - 4 sets x 8-12 reps',
+                '🔥 Cable Flyes - 3 sets x 12-15 reps',
+                '💪 Decline Push-ups - 3 sets x max reps'
+            ],
+            'back': [
+                '💪 Pull-ups - 4 sets x max reps',
+                '🏋️ Barbell Rows - 4 sets x 8-12 reps',
+                '🔥 Lat Pulldown - 3 sets x 10-15 reps',
+                '💪 Bicep Curls - 3 sets x 12-15 reps',
+                '🔥 Hammer Curls - 3 sets x 12-15 reps',
+                '💪 Preacher Curls - 3 sets x 10-12 reps'
+            ],
+            'legs': [
+                '🏋️ Squats - 4 sets x 8-12 reps',
+                '🔥 Lunges - 3 sets x 12 reps per been',
+                '💪 Leg Press - 3 sets x 10-15 reps',
+                '🔥 Shoulder Press - 4 sets x 8-12 reps',
+                '💪 Side Raises - 3 sets x 12-15 reps',
+                '🔥 Rear Delt Flyes - 3 sets x 12-15 reps'
+            ]
+        };
+        
+        const workout = fallbackWorkouts[muscleGroup] || fallbackWorkouts['chest'];
+        res.json({ workout: workout.join('\n') });
     }
 });
 
