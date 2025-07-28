@@ -26,7 +26,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 console.log('✅ Gemini AI geïnitialiseerd met API key');
 
 // Fitness coach prompt voor Gemini
-const FITNESS_COACH_PROMPT = `Je bent Jesse's persoonlijke fitness coach. Je naam is "Coach Jesse" en je bent een motiverende, enthousiaste fitness expert die Jesse helpt met zijn fitness doelen.
+const FITNESS_COACH_PROMPT = `Je bent Max, Jesse's persoonlijke trainer. Je bent een motiverende, enthousiaste fitness expert die Jesse helpt met zijn fitness doelen.
 
 Jesse's context:
 - Jesse traint in Gym Zeewolde
@@ -37,10 +37,11 @@ Jesse's context:
 Je stijl:
 - Gebruik veel emoji's en enthousiasme 💪🔥🚀
 - Spreek Jesse direct aan met "Jesse"
-- Geef praktische, concrete adviezen
+- Geef praktische, concrete adviezen als zijn trainer
 - Motiveer en inspireer
 - Wees positief maar realistisch
 - Gebruik Nederlandse fitness termen waar mogelijk
+- Je bent Max, zijn trainer, dus wees direct en duidelijk
 
 Beantwoord vragen over:
 - Oefeningen en technieken
@@ -76,7 +77,7 @@ app.post('/api/chat', async (req, res) => {
                 },
                 {
                     role: "model",
-                    parts: [{ text: "Hé Jesse! 💪 Ik ben je persoonlijke fitness coach en ik ga je helpen om je doelen te bereiken! Stel me vragen over oefeningen, training, voeding of motivatie - ik ben er voor je! 🔥" }]
+                    parts: [{ text: "Hé Jesse! 💪 Ik ben Max, je trainer! Ik ga je helpen om je doelen te bereiken! Stel me vragen over oefeningen, training, voeding of motivatie - ik ben er voor je! 🔥" }]
                 }
             ]
         });
@@ -94,17 +95,17 @@ app.post('/api/chat', async (req, res) => {
         
         // Fallback responses voor als Gemini niet werkt
         const fallbackResponses = {
-            'borst': "💪 Voor borstspieren: Bankdrukken, Dumbbell Press, Push-ups, Cable Flyes zijn geweldig! Focus op 8-12 reps voor spiergroei.",
-            'rug': "🏋️ Voor rugspieren: Pull-ups, Deadlifts, Barbell Rows, Lat Pulldown. Zorg voor goede vorm!",
-            'benen': "🔥 Voor beenspieren: Squats, Deadlifts, Lunges, Leg Press. Benen zijn je fundament!",
-            'schouders': "💪 Voor schouders: Military Press, Lateral Raises, Arnold Press. Werk alle drie de koppen!",
-            'biceps': "💪 Biceps: Curls, Hammer Curls. Triceps: Dips, Pushdowns. Armen reageren goed op volume!",
+            'borst': "💪 Jesse, voor borstspieren: Bankdrukken, Dumbbell Press, Push-ups, Cable Flyes zijn geweldig! Focus op 8-12 reps voor spiergroei.",
+            'rug': "🏋️ Jesse, voor rugspieren: Pull-ups, Deadlifts, Barbell Rows, Lat Pulldown. Zorg voor goede vorm!",
+            'benen': "🔥 Jesse, voor beenspieren: Squats, Deadlifts, Lunges, Leg Press. Benen zijn je fundament!",
+            'schouders': "💪 Jesse, voor schouders: Military Press, Lateral Raises, Arnold Press. Werk alle drie de koppen!",
+            'biceps': "💪 Jesse, Biceps: Curls, Hammer Curls. Triceps: Dips, Pushdowns. Armen reageren goed op volume!",
             'motivatie': "🚀 Jesse, jij bent sterker dan je denkt! Elke rep telt. Focus op progressie, niet perfectie!",
-            'sets': "📊 Voor spiergroei: 3-4 sets, 8-12 reps. Voor kracht: 4-5 sets, 4-6 reps. Voor uithouding: 2-3 sets, 15+ reps!"
+            'sets': "📊 Jesse, voor spiergroei: 3-4 sets, 8-12 reps. Voor kracht: 4-5 sets, 4-6 reps. Voor uithouding: 2-3 sets, 15+ reps!"
         };
         
         const messageLower = message.toLowerCase();
-        let fallbackResponse = "💪 Stel me specifieke vragen over spiergroepen, oefeningen, sets/reps, of motivatie! Ik help je graag verder!";
+        let fallbackResponse = "💪 Jesse, stel me specifieke vragen over spiergroepen, oefeningen, sets/reps, of motivatie! Ik help je graag verder!";
         
         for (const [keyword, response] of Object.entries(fallbackResponses)) {
             if (messageLower.includes(keyword)) {
